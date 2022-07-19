@@ -4,6 +4,9 @@ db:
 nginx:
 	@sudo systemctl restart nginx.service
 
+app:
+	@sudo systemctl restart isucondition.go.service
+
 systemctl-list:
 	systemctl list-unit-files --type=service
 
