@@ -208,8 +208,8 @@ func init() {
 
 func main() {
 	e := echo.New()
-	e.Debug = true
-	e.Logger.SetLevel(log.DEBUG)
+	//e.Debug = true
+	e.Logger.SetLevel(log.INFO)
 
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
@@ -237,6 +237,7 @@ func main() {
 	e.Static("/assets", frontendContentsPath+"/assets")
 
 	mySQLConnectionData = NewMySQLConnectionEnv()
+	e.Logger.Info(mySQLConnectionData)
 
 	var err error
 	db, err = mySQLConnectionData.ConnectDB()
