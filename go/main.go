@@ -275,6 +275,8 @@ func getSession(r *http.Request) (*sessions.Session, error) {
 	return session, nil
 }
 
+var userCache = NewCacheSlice()
+
 func getUserIDFromSession(c echo.Context) (string, int, error) {
 	session, err := getSession(c.Request())
 	if err != nil {
@@ -288,10 +290,16 @@ func getUserIDFromSession(c echo.Context) (string, int, error) {
 	jiaUserID := _jiaUserID.(string)
 	var count int
 
-	err = db.Get(&count, "SELECT COUNT(*) FROM `user` WHERE `jia_user_id` = ?",
-		jiaUserID)
-	if err != nil {
-		return "", http.StatusInternalServerError, fmt.Errorf("db error: %v", err)
+	cc, contain := userCache.Get(jiaUserID)
+	if contain {
+		count = cc;
+	} else {
+		err = db.Get(&count, "SELECT COUNT(*) FROM `user` WHERE `jia_user_id` = ?",
+			jiaUserID)
+		if err != nil {
+			return "", http.StatusInternalServerError, fmt.Errorf("db error: %v", err)
+		}
+		userCache.Set(jiaUserID, count)
 	}
 
 	if count == 0 {
