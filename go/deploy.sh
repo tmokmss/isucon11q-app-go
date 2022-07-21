@@ -1,4 +1,5 @@
 #!/bin/bash -x
+set -ex
 
 echo "start deploy ${USER}"
 BINARY='isucondition'
