@@ -84,13 +84,14 @@ type GetIsuListResponse struct {
 }
 
 type IsuCondition struct {
-	ID         int       `db:"id"`
-	JIAIsuUUID string    `db:"jia_isu_uuid"`
-	Timestamp  time.Time `db:"timestamp"`
-	IsSitting  bool      `db:"is_sitting"`
-	Condition  string    `db:"condition"`
-	Message    string    `db:"message"`
-	CreatedAt  time.Time `db:"created_at"`
+	ID             int       `db:"id"`
+	JIAIsuUUID     string    `db:"jia_isu_uuid"`
+	Timestamp      time.Time `db:"timestamp"`
+	IsSitting      bool      `db:"is_sitting"`
+	Condition      string    `db:"condition"`
+	ConditionLevel string    `db:"conditionLevel"`
+	Message        string    `db:"message"`
+	CreatedAt      time.Time `db:"created_at"`
 }
 
 type MySQLConnectionEnv struct {
@@ -292,7 +293,7 @@ func getUserIDFromSession(c echo.Context) (string, int, error) {
 
 	cc, contain := userCache.Get(jiaUserID)
 	if contain {
-		count = cc;
+		count = cc
 	} else {
 		err = db.Get(&count, "SELECT COUNT(*) FROM `user` WHERE `jia_user_id` = ?",
 			jiaUserID)
@@ -1176,7 +1177,7 @@ func getTrend(c echo.Context) error {
 		sort.Slice(characterInfoIsuConditions, func(i, j int) bool {
 			return characterInfoIsuConditions[i].Timestamp > characterInfoIsuConditions[j].Timestamp
 		})
-		sort.Slice(characterWarningIsuConditions, func(i, j int) bool {
+		sort.Slice(characterWarningIsuConditions, func(i int, j int) bool {
 			return characterWarningIsuConditions[i].Timestamp > characterWarningIsuConditions[j].Timestamp
 		})
 		sort.Slice(characterCriticalIsuConditions, func(i, j int) bool {
@@ -1192,14 +1193,6 @@ func getTrend(c echo.Context) error {
 	}
 
 	return c.JSON(http.StatusOK, res)
-}
-
-type ConditionRequest struct {
-	JIAIsuUUID string    `db:"jia_isu_uuid"`
-	Timestamp  time.Time `db:"timestamp"`
-	IsSitting  bool      `db:"is_sitting"`
-	Condition  string    `db:"condition"`
-	Message    string    `db:"message"`
 }
 
 // POST /api/condition/:jia_isu_uuid
@@ -1242,14 +1235,15 @@ func postIsuCondition(c echo.Context) error {
 		return c.String(http.StatusNotFound, "not found: isu")
 	}
 
-	condReq := []ConditionRequest{}
+	condReq := []IsuCondition{}
 
 	for _, cond := range req {
 		timestamp := time.Unix(cond.Timestamp, 0)
 		if !isValidConditionFormat(cond.Condition) {
 			return c.String(http.StatusBadRequest, "bad request body")
 		}
-		condReq = append(condReq, ConditionRequest{JIAIsuUUID: jiaIsuUUID, Timestamp: timestamp, Condition: cond.Condition, IsSitting: cond.IsSitting, Message: cond.Message})
+		conditionLevel, _ := calculateConditionLevel(cond.Condition)
+		condReq = append(condReq, IsuCondition{JIAIsuUUID: jiaIsuUUID, Timestamp: timestamp, Condition: cond.Condition, IsSitting: cond.IsSitting, Message: cond.Message, ConditionLevel: conditionLevel})
 	}
 
 	_, err = tx.NamedExec(
