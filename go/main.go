@@ -12,6 +12,7 @@ import (
 	"net/http"
 	"os"
 	"os/exec"
+	"runtime"
 	"sort"
 	"strconv"
 	"strings"
@@ -24,6 +25,8 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/labstack/gommon/log"
+
+	_ "net/http/pprof"
 )
 
 const (
@@ -207,6 +210,12 @@ func init() {
 }
 
 func main() {
+	runtime.SetBlockProfileRate(1)
+	runtime.SetMutexProfileFraction(1)
+	go func() {
+		log.Print(http.ListenAndServe("0.0.0.0:6060", nil))
+	}()
+
 	e := echo.New()
 	//e.Debug = true
 	e.Logger.SetLevel(log.INFO)
