@@ -17,7 +17,7 @@ ptq:
 	sudo pt-query-digest --limit 10 /var/log/mysql/mariadb-slow.log
 
 reset-log:
-	sudo rm /var/log/mysql/mariadb-slow.log
-	sudo rm /var/log/nginx/access.log
+	sudo rm /var/log/mysql/mariadb-slow.log || true
+	sudo rm /var/log/nginx/access.log || true
 	make db
 	make nginx
