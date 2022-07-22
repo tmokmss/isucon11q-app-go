@@ -12,7 +12,6 @@ import (
 	"net/http"
 	"os"
 	"os/exec"
-	"runtime"
 	"sort"
 	"strconv"
 	"strings"
@@ -211,15 +210,15 @@ func init() {
 }
 
 func main() {
-	runtime.SetBlockProfileRate(1)
-	runtime.SetMutexProfileFraction(1)
-	go func() {
-		log.Print(http.ListenAndServe("0.0.0.0:6060", nil))
-	}()
+	//runtime.SetBlockProfileRate(1)
+	//runtime.SetMutexProfileFraction(1)
+	//go func() {
+	//	log.Print(http.ListenAndServe("0.0.0.0:6060", nil))
+	//}()
 
 	e := echo.New()
 	//e.Debug = true
-	e.Logger.SetLevel(log.INFO)
+	e.Logger.SetLevel(log.OFF)
 
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
@@ -1192,7 +1191,7 @@ func getTrend(c echo.Context) error {
 // ISUからのコンディションを受け取る
 func postIsuCondition(c echo.Context) error {
 	// TODO: 一定割合リクエストを落としてしのぐようにしたが、本来は全量さばけるようにすべき
-	dropProbability := 0.9
+	dropProbability := 0.0
 	if rand.Float64() <= dropProbability {
 		//c.Logger().Warnf("drop post isu condition request")
 		return c.NoContent(http.StatusAccepted)

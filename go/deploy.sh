@@ -6,7 +6,7 @@ BINARY='isucondition'
 SERVICE='isucondition.go.service'
 
 GOOS=linux go build -o $BINARY
-for server in isu1 isu2 isu3; do
+for server in isu11 isu31 isu21; do
     ssh -t $server "sudo systemctl stop ${SERVICE}"
     scp ./$BINARY $server:/home/isucon/webapp/go/
     ssh -t $server "sudo systemctl start ${SERVICE}"
