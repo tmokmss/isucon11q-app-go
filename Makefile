@@ -1,11 +1,11 @@
 db:
-	@sudo systemctl restart mysql.service
+	sudo systemctl restart mysql.service
 
 nginx:
-	@sudo systemctl restart nginx.service
+	sudo systemctl restart nginx.service
 
 app:
-	@sudo systemctl restart isucondition.go.service
+	sudo systemctl restart isucondition.go.service
 
 systemctl-list:
 	systemctl list-unit-files --type=service

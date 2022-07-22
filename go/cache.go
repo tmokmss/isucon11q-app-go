@@ -39,5 +39,3 @@ func (c *cacheSlice) Incr(key string, n int) {
 	}
 	c.Unlock()
 }
-
-var mCache = NewCacheSlice()
