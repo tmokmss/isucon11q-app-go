@@ -1,11 +1,11 @@
 db:
-	@sudo systemctl restart mysql.service
+	sudo systemctl restart mysql.service
 
 nginx:
-	@sudo systemctl restart nginx.service
+	sudo systemctl restart nginx.service
 
 app:
-	@sudo systemctl restart isucondition.go.service
+	sudo systemctl restart isucondition.go.service
 
 systemctl-list:
 	systemctl list-unit-files --type=service
@@ -20,7 +20,7 @@ mss:
 	sudo mysqldumpslow -s t -t 20
 
 reset-log:
-	sudo rm /var/log/mysql/mariadb-slow.log
-	sudo rm /var/log/nginx/access.log
+	sudo rm /var/log/mysql/mariadb-slow.log || true
+	sudo rm /var/log/nginx/access.log || true
 	make db
 	make nginx
